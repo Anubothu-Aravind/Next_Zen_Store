@@ -10,7 +10,7 @@
   
   <!-- Terminal Content -->
   <text x="20" y="70" font-family="Consolas, monospace" font-size="12" fill="#4CAF50">==================================</text>
-  <text x="20" y="90" font-family="Consolas, monospace" font-size="12" fill="#4CAF50">MK STORES API INTEGRATION TESTS</text>
+  <text x="20" y="90" font-family="Consolas, monospace" font-size="12" fill="#4CAF50">NEXT ZEN STORE API INTEGRATION TESTS</text>
   <text x="20" y="110" font-family="Consolas, monospace" font-size="12" fill="#4CAF50">==================================</text>
   
   <text x="20" y="140" font-family="Consolas, monospace" font-size="12" fill="#61AFEF">Auth: admin login...</text>

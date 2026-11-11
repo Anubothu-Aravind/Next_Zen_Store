@@ -1,6 +1,6 @@
-# MK Reddy General Stores
+# Next Zen Store
 
-MK Reddy General Stores is a full stack grocery platform with a Next.js storefront and an Express API. It supports customer ordering, admin operations, bilingual catalog data, and a production grade security posture.
+Next Zen Store is a full stack grocery platform with a Next.js storefront and an Express API. It supports customer ordering, admin operations, bilingual catalog data, and a production grade security posture.
 
 ## Table of Contents
 

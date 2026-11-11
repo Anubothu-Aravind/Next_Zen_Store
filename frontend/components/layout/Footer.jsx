@@ -48,13 +48,13 @@ export default function Footer() {
           <div>
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-blue-600 text-white font-bold text-xl rounded-lg w-10 h-10 flex items-center justify-center shrink-0">
-                MK
+                NZ
               </div>
               <div>
                 <p className="font-bold text-white text-lg leading-tight">
-                  MK Reddy
+                  Next Zen
                 </p>
-                <p className="text-xs text-gray-400">General Stores</p>
+                <p className="text-xs text-gray-400">Store</p>
               </div>
             </div>
             <p className="text-sm text-gray-400 leading-relaxed mb-5">
@@ -81,10 +81,10 @@ export default function Footer() {
               <div className="flex items-center gap-2.5 text-gray-400">
                 <Mail className="w-4 h-4 shrink-0 text-blue-400" />
                 <a
-                  href="mailto:mkreddygeneralstore@gmail.com"
+                  href="mailto:nextzenstore@gmail.com"
                   className="hover:text-white transition-colors"
                 >
-                  mkreddygeneralstore@gmail.com
+                  nextzenstore@gmail.com
                 </a>
               </div>
               <div className="flex items-center gap-2.5 text-gray-400">
@@ -138,7 +138,7 @@ export default function Footer() {
       <div className="border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-gray-500">
-            © {new Date().getFullYear()} MK Reddy General Stores. All rights
+            © {new Date().getFullYear()} Next Zen Store. All rights
             reserved.
           </p>
           <p className="text-xs text-gray-500">

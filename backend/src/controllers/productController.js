@@ -232,7 +232,7 @@ const downloadAllProducts = asyncHandler(async (req, res) => {
   }
 
   const workbook = new ExcelJS.Workbook();
-  workbook.creator = "MK Reddy General Stores";
+  workbook.creator = "Next Zen Store";
   const ws = workbook.addWorksheet("Products");
 
   ws.columns = [

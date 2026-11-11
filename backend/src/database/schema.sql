@@ -1,4 +1,4 @@
--- MK Kirana Stores Database Schema (PostgreSQL 15+)
+-- Next Zen Store Database Schema (PostgreSQL 15+)
 
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 

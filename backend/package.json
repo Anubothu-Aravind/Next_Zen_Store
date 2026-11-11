@@ -1,7 +1,7 @@
 {
-  "name": "mk-reddy-genral-stores-backend",
+  "name": "next-zen-store-backend",
   "version": "1.0.0",
-  "description": "Production-ready backend for MK Reddy General Stores grocery e-commerce",
+  "description": "Production-ready backend for Next Zen Store grocery e-commerce",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
@@ -21,7 +21,7 @@
     "express",
     "mysql"
   ],
-  "author": "MK Reddy General Stores",
+  "author": "Next Zen Store",
   "license": "ISC",
   "dependencies": {
     "axios": "^1.6.7",

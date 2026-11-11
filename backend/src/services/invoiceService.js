@@ -131,7 +131,7 @@ class InvoiceService {
 </style>
 </head>
 <body>
-<h1>MK Reddy General Stores</h1>
+<h1>Next Zen Store</h1>
 <h2>Invoice</h2>
 <table class="meta">
   <tr><td><b>Invoice #:</b></td><td>${invoice.invoice_number}</td><td><b>Date:</b></td><td>${new Date(invoice.created_at).toLocaleDateString("en-IN")}</td></tr>

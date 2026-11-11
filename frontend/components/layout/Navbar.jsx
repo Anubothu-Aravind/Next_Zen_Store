@@ -112,14 +112,14 @@ export default function Navbar() {
             {}
             <Link href="/" className="flex items-center gap-3">
               <div className="bg-blue-600 text-white font-bold text-xl rounded-lg w-10 h-10 flex items-center justify-center">
-                MK
+                NZ
               </div>
               <div className="flex flex-col">
                 <span className="font-bold text-2xl text-gray-900 tracking-tight leading-tight">
-                  MK Reddy
+                  Next Zen
                 </span>
                 <span className="text-sm text-gray-600 font-medium -mt-0.5">
-                  General Store
+                  Store
                 </span>
               </div>
             </Link>

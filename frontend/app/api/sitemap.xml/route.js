@@ -1,4 +1,4 @@
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://mkreddygeneralstore.com/";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://nextzenstore.com/";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api/v1";
 
 const STATIC_URLS = [

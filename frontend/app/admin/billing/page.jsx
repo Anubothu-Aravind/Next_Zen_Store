@@ -556,7 +556,7 @@ export default function BillingPage() {
                     <div className="max-w-4xl mx-auto text-xs leading-snug text-gray-900" id="invoice-content">
                       {/* Store Header */}
                       <div className="mb-1 text-left">
-                        <h1 className="text-sm font-bold tracking-wide text-gray-900">M K REDDY GENERAL STORES</h1>
+                        <h1 className="text-sm font-bold tracking-wide text-gray-900">NEXT ZEN STORE</h1>
                         <p className="text-xs text-gray-700">SALIPETA, NELLORE</p>
                         <p className="text-xs text-gray-600">GSTIN : 37D1C9A5877L1Z0</p>
                         <p className="text-xs text-gray-600">State: 37-Andhra Pradesh</p>

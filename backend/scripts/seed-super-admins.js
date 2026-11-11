@@ -29,7 +29,7 @@ const pool = new Pool({
 
 const SUPER_ADMINS = [
   { email: "anuradhap1784@gmail.com", name: "Anuradha", phone: "0000000001" },
-  { email: "mkreddygeneralstore@gmail.com", name: "MK Reddy Store", phone: "0000000002" },
+  { email: "mkreddygeneralstore@gmail.com", name: "Next Zen Store", phone: "0000000002" },
 ];
 
 async function run() {

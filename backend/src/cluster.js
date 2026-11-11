@@ -1,5 +1,5 @@
 /**
- * MK Reddy General Stores — Cluster Load Balancer
+ * Next Zen Store — Cluster Load Balancer
  *
  * Spawns one worker per logical CPU core so all cores handle HTTP requests
  * in parallel. The master process watches workers and restarts any that crash,
@@ -26,7 +26,7 @@ if (cluster.isPrimary) {
   logger.info(`
 ╔══════════════════════════════════════════════════════════════════╗
 ║                                                                  ║
-║   🔄  MK Reddy General Stores — Cluster Load Balancer            ║
+║   🔄  Next Zen Store — Cluster Load Balancer                     ║
 ║                                                                  ║
 ║   Master PID : ${String(process.pid).padEnd(48)}║
 ║   CPU Cores  : ${String(os.cpus().length).padEnd(48)}║

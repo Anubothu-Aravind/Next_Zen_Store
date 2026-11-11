@@ -86,7 +86,7 @@ router.get('/health', async (req, res) => {
 router.get('/', (req, res) => {
   res.json({
     success: true,
-    message: 'Welcome to MK Kirana Stores API',
+    message: 'Welcome to Next Zen Store API',
     version: '1.0.0',
     endpoints: {
       auth: '/api/v1/auth',

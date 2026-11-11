@@ -8254,10 +8254,10 @@ export default function AdminDashboard() {
         <div className="h-[70px] flex items-center gap-3 px-5 border-b border-gray-200 shrink-0">
           <Link href="/" className="flex items-center gap-3 group">
             <div className="bg-gradient-to-br from-indigo-500 to-indigo-700 text-white font-bold text-[16px] rounded-xl w-9 h-9 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-              MK
+              NZ
             </div>
             <div className="flex flex-col">
-              <span className="font-bold text-[16px] text-gray-900 leading-tight">MK Reddy</span>
+              <span className="font-bold text-[16px] text-gray-900 leading-tight">Next Zen</span>
               <span className="text-[10px] text-gray-400 -mt-0.5 font-medium uppercase tracking-wider">Admin Panel</span>
             </div>
           </Link>

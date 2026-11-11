@@ -281,14 +281,14 @@ export default function MobileHeader() {
         {/* Left: Logo + Store name */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <div className="bg-[#16A34A] text-white font-extrabold text-sm rounded-lg w-9 h-9 flex items-center justify-center shadow-sm">
-            MK
+            NZ
           </div>
           <div className="flex flex-col leading-tight">
             <span className="font-bold text-sm text-gray-900 leading-tight">
-              MK Reddy
+              Next Zen
             </span>
             <span className="text-[10px] text-gray-500 font-medium">
-              General Store
+              Store
             </span>
           </div>
         </Link>

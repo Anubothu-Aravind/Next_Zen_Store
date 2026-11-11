@@ -69,9 +69,9 @@ export default function NotFound() {
       {}
       <div className="mt-16 flex items-center gap-2 text-gray-400 text-sm">
         <div className="bg-blue-600 text-white font-bold text-xs rounded-md w-6 h-6 flex items-center justify-center shrink-0">
-          MK
+          NZ
         </div>
-        <span>MK Reddy General Store</span>
+        <span>Next Zen Store</span>
         <span className="text-gray-200">•</span>
         <span>Your daily essentials, delivered</span>
       </div>

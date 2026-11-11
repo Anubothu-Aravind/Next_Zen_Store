@@ -22,7 +22,7 @@ const pool = new Pool({
   keepAliveInitialDelayMillis: 10000,
   statement_timeout: 30000,
   query_timeout: 30000,
-  application_name: "mk-reddy-stores-api",
+  application_name: "next-zen-store-api",
 });
 pool.on("error", (err) => logger.error("Unexpected PG pool error", err));
 

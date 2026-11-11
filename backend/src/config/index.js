@@ -44,7 +44,7 @@ const config = {
     adminEmail: process.env.ADMIN_EMAIL || "",
   },
   store: {
-    name: process.env.STORE_NAME || "MK Kirrana Stores",
+    name: process.env.STORE_NAME || "Next Zen Store",
     gstNumber: process.env.STORE_GST_NUMBER || "",
     address: process.env.STORE_ADDRESS || "",
     phone: process.env.STORE_PHONE || "",

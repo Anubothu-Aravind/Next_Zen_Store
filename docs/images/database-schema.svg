@@ -3,7 +3,7 @@
   <rect width="1400" height="1000" fill="#f8f9fa"/>
   
   <!-- Title -->
-  <text x="700" y="40" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#333" text-anchor="middle">MK Stores Database Schema</text>
+  <text x="700" y="40" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#333" text-anchor="middle">Next Zen Store Database Schema</text>
   <text x="700" y="70" font-family="Arial, sans-serif" font-size="16" fill="#666" text-anchor="middle">PostgreSQL 15 • 17 Tables • Relational Model</text>
   
   <!-- Legend -->

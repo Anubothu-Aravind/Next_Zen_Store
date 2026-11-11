@@ -1,5 +1,5 @@
 {
-  "name": "mk-reddy-genral-stores",
+  "name": "next-zen-store",
   "version": "1.0.0",
   "scripts": {
     "start": "npm run start:backend",

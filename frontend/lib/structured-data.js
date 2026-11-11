@@ -6,7 +6,7 @@ export function generateOrganization() {
     "@type": "LocalBusiness",
     "@id": SITE_URL,
     name: SITE_NAME,
-    alternateName: "MK Reddy General Stores - Online Grocery",
+    alternateName: "Next Zen Store - Online Grocery",
     description: SITE_DESCRIPTION,
     url: SITE_URL,
     image: `${SITE_URL}og-image.png`,
@@ -24,14 +24,14 @@ export function generateOrganization() {
     priceRange: "INR",
     servesCuisine: ["Grocery", "Fresh Produce", "Household Items"],
     sameAs: [
-      "https://www.facebook.com/mkreddygeneralstores",
-      "https://www.instagram.com/mkreddygeneralstores",
-      "https://www.youtube.com/@mkreddygeneralstores",
+      "https://www.facebook.com/nextzenstore",
+      "https://www.instagram.com/nextzenstore",
+      "https://www.youtube.com/@nextzenstore",
     ],
     contactPoint: {
       "@type": "CustomerService",
       contactType: "Customer Service",
-      email: "support@mkreddygeneralstore.com",
+      email: "support@nextzenstore.com",
       availableLanguage: ["en", "te"],
     },
   };

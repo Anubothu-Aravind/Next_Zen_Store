@@ -118,7 +118,7 @@ function htmlToText(html = '') {
 }
 
 function renderEmail({ title, subtitle, badge = '', content = '', footerNote = '', tone = 'neutral' }) {
-  const storeName = config.store.name || 'MK Kirana Stores';
+  const storeName = config.store.name || 'Next Zen Store';
   const storePhone = config.store.phone || '';
   const storeEmail = config.store.email || '';
   const storeGst = config.store.gstNumber || config.store.gst || '';
@@ -851,7 +851,7 @@ class EmailService {
         subject: `[PREVIEW] Order Confirmed | Invoice: INV-2026-001 | ${config.store.name}`,
         html: renderEmail({
           badge: 'ORDER CONFIRMED',
-          title: 'Order MK-2026-001 confirmed',
+          title: 'Order NZ-2026-001 confirmed',
           subtitle: 'Preview of customer confirmation email',
           tone: 'success',
           content: '<div class="box"><div style="font-size:14px; line-height:1.8; color:#0f172a;"><div><strong>Order Date : </strong>01 Apr 2026</div><div><strong>Status : </strong><span class="ok">Confirmed</span></div><div><strong>Total : </strong>Rs.1450.00</div></div></div><div class="section"><div class="muted" style="margin-bottom:8px;font-weight:700;color:#334155;">Items Ordered</div><table><thead><tr><th>Item</th><th class="num">Qty</th><th class="num">Amount</th></tr></thead><tbody><tr><td>Toor Dal 1kg</td><td class="num">2</td><td class="num">Rs.360.00</td></tr><tr><td>Sunflower Oil 1L</td><td class="num">4</td><td class="num">Rs.620.00</td></tr><tr><td>Basmati Rice 5kg</td><td class="num">1</td><td class="num">Rs.1700.00</td></tr></tbody></table></div>',
@@ -862,10 +862,10 @@ class EmailService {
         subject: `[PREVIEW] Order Picked Up | Invoice: INV-2026-001 | ${config.store.name}`,
         html: renderEmail({
           badge: 'ORDER PICKED UP',
-          title: 'Order MK-2026-001 completed',
+          title: 'Order NZ-2026-001 completed',
           subtitle: 'Preview of picked-up confirmation email',
           tone: 'success',
-          content: '<div class="box"><div style="font-size:14px; line-height:1.8; color:#0f172a;"><div><strong>Order : </strong>MK-2026-001</div><div><strong>Total : </strong>Rs.1450.00</div><div><strong>Status : </strong><span class="ok">Picked Up</span></div></div></div><div class="section"><div class="muted" style="margin-bottom:8px;font-weight:700;color:#334155;">Picked Up Items</div><table><thead><tr><th>Item</th><th class="num">Qty</th><th class="num">Amount</th></tr></thead><tbody><tr><td>Toor Dal 1kg</td><td class="num">2</td><td class="num">Rs.360.00</td></tr><tr><td>Sunflower Oil 1L</td><td class="num">4</td><td class="num">Rs.620.00</td></tr></tbody></table></div>',
+          content: '<div class="box"><div style="font-size:14px; line-height:1.8; color:#0f172a;"><div><strong>Order : </strong>NZ-2026-001</div><div><strong>Total : </strong>Rs.1450.00</div><div><strong>Status : </strong><span class="ok">Picked Up</span></div></div></div><div class="section"><div class="muted" style="margin-bottom:8px;font-weight:700;color:#334155;">Picked Up Items</div><table><thead><tr><th>Item</th><th class="num">Qty</th><th class="num">Amount</th></tr></thead><tbody><tr><td>Toor Dal 1kg</td><td class="num">2</td><td class="num">Rs.360.00</td></tr><tr><td>Sunflower Oil 1L</td><td class="num">4</td><td class="num">Rs.620.00</td></tr></tbody></table></div>',
           footerNote: 'Preview email - template design only',
         }),
       },
@@ -873,10 +873,10 @@ class EmailService {
         subject: `[PREVIEW] Order Ready | Invoice: INV-2026-001 | ${config.store.name}`,
         html: renderEmail({
           badge: 'READY FOR PICKUP',
-          title: 'Order MK-2026-001 is ready',
+          title: 'Order NZ-2026-001 is ready',
           subtitle: 'Preview of ready-for-pickup email',
           tone: 'success',
-          content: '<div class="box"><div style="font-size:14px; line-height:1.8; color:#0f172a;"><div><strong>Order : </strong>MK-2026-001</div><div><strong>Amount : </strong>Rs.1450.00</div></div></div><div class="section"><div class="muted" style="margin-bottom:8px;font-weight:700;color:#334155;">Items Ordered</div><table><thead><tr><th>Item</th><th class="num">Qty</th><th class="num">Amount</th></tr></thead><tbody><tr><td>Toor Dal 1kg</td><td class="num">2</td><td class="num">Rs.360.00</td></tr><tr><td>Sunflower Oil 1L</td><td class="num">4</td><td class="num">Rs.620.00</td></tr><tr><td>Basmati Rice 5kg</td><td class="num">1</td><td class="num">Rs.1700.00</td></tr></tbody></table></div>',
+          content: '<div class="box"><div style="font-size:14px; line-height:1.8; color:#0f172a;"><div><strong>Order : </strong>NZ-2026-001</div><div><strong>Amount : </strong>Rs.1450.00</div></div></div><div class="section"><div class="muted" style="margin-bottom:8px;font-weight:700;color:#334155;">Items Ordered</div><table><thead><tr><th>Item</th><th class="num">Qty</th><th class="num">Amount</th></tr></thead><tbody><tr><td>Toor Dal 1kg</td><td class="num">2</td><td class="num">Rs.360.00</td></tr><tr><td>Sunflower Oil 1L</td><td class="num">4</td><td class="num">Rs.620.00</td></tr><tr><td>Basmati Rice 5kg</td><td class="num">1</td><td class="num">Rs.1700.00</td></tr></tbody></table></div>',
           footerNote: 'Preview email - template design only',
         }),
       },
@@ -884,7 +884,7 @@ class EmailService {
         subject: `[PREVIEW] New Order Admin | Invoice: INV-2026-002 | ${config.store.name}`,
         html: renderEmail({
           badge: 'NEW ORDER',
-          title: 'New order MK-2026-002',
+          title: 'New order NZ-2026-002',
           subtitle: 'Preview of admin new-order email',
           tone: 'neutral',
           content: '<div class="box"><div style="font-size:14px; line-height:1.8; color:#0f172a;"><div><strong>Customer&nbsp;:&nbsp;</strong>Demo Customer</div><div><strong>Phone&nbsp;:&nbsp;</strong>9999999999</div><div><strong>Total&nbsp;:&nbsp;</strong>Rs.2680.00</div></div></div><div class="section"><table><thead><tr><th>Item Details</th><th class="num">Qty</th><th class="num">Unit</th><th class="num">Total</th></tr></thead><tbody><tr><td>Toor Dal 1kg<div class="muted">Premium</div></td><td class="num">2</td><td class="num">Rs.180.00</td><td class="num">Rs.360.00</td></tr><tr><td>Sunflower Oil 1L</td><td class="num">4</td><td class="num">Rs.155.00</td><td class="num">Rs.620.00</td></tr><tr><td>Basmati Rice 5kg</td><td class="num">1</td><td class="num">Rs.1700.00</td><td class="num">Rs.1700.00</td></tr></tbody></table></div>',
@@ -895,10 +895,10 @@ class EmailService {
         subject: `[PREVIEW] Cancellation Admin | Invoice: INV-2026-003 | ${config.store.name}`,
         html: renderEmail({
           badge: 'ORDER CANCELLED',
-          title: 'Cancelled: MK-2026-003',
+          title: 'Cancelled: NZ-2026-003',
           subtitle: 'Preview of admin cancellation email style',
           tone: 'danger',
-          content: '<div class="panel-danger"><div style="font-size:14px;color:#9f1239;font-weight:700;margin-bottom:6px;">Immediate Action Required</div><div class="muted" style="color:#9f1239;">Order has been cancelled. Review stock allocation and payment status.</div></div><div class="metric-row"><div class="metric-box"><div class="metric-label">Order Value</div><div class="metric-value danger">Rs.899.00</div></div><div class="metric-box"><div class="metric-label">Order Date</div><div class="metric-value" style="font-size:14px;">01 Apr 2026</div></div><div class="metric-box"><div class="metric-label">Cancelled At</div><div class="metric-value" style="font-size:14px;">01 Apr 2026, 07:40 PM</div></div></div><div class="section box soft"><div class="kv"><div class="kv-item"><span class="kv-label">Customer :</span> Demo Customer</div><div class="kv-item"><span class="kv-label">Order Number :</span> MK-2026-003</div><div class="kv-item"><span class="kv-label">Phone :</span> 9999999999</div><div class="kv-item"><span class="kv-label">Reason :</span> <span class="pill pill-danger">Customer request</span></div></div></div><div class="section panel-warning"><div class="muted" style="margin-bottom:6px;font-weight:700;color:#92400e;">Operational Checklist</div><ul class="list"><li>Release reserved inventory back to stock.</li><li>If payment captured, trigger refund workflow.</li><li>Mark internal fulfillment tasks as cancelled.</li></ul></div><div class="section"><div class="muted" style="margin-bottom:8px;font-weight:700;color:#334155;">Cancelled Items</div><table><thead><tr><th>Item</th><th class="num">Qty</th><th class="num">Amount</th></tr></thead><tbody><tr><td>Toor Dal 1kg</td><td class="num">2</td><td class="num">Rs.360.00</td></tr><tr><td>Sunflower Oil 1L</td><td class="num">4</td><td class="num">Rs.620.00</td></tr></tbody></table></div>',
+          content: '<div class="panel-danger"><div style="font-size:14px;color:#9f1239;font-weight:700;margin-bottom:6px;">Immediate Action Required</div><div class="muted" style="color:#9f1239;">Order has been cancelled. Review stock allocation and payment status.</div></div><div class="metric-row"><div class="metric-box"><div class="metric-label">Order Value</div><div class="metric-value danger">Rs.899.00</div></div><div class="metric-box"><div class="metric-label">Order Date</div><div class="metric-value" style="font-size:14px;">01 Apr 2026</div></div><div class="metric-box"><div class="metric-label">Cancelled At</div><div class="metric-value" style="font-size:14px;">01 Apr 2026, 07:40 PM</div></div></div><div class="section box soft"><div class="kv"><div class="kv-item"><span class="kv-label">Customer :</span> Demo Customer</div><div class="kv-item"><span class="kv-label">Order Number :</span> NZ-2026-003</div><div class="kv-item"><span class="kv-label">Phone :</span> 9999999999</div><div class="kv-item"><span class="kv-label">Reason :</span> <span class="pill pill-danger">Customer request</span></div></div></div><div class="section panel-warning"><div class="muted" style="margin-bottom:6px;font-weight:700;color:#92400e;">Operational Checklist</div><ul class="list"><li>Release reserved inventory back to stock.</li><li>If payment captured, trigger refund workflow.</li><li>Mark internal fulfillment tasks as cancelled.</li></ul></div><div class="section"><div class="muted" style="margin-bottom:8px;font-weight:700;color:#334155;">Cancelled Items</div><table><thead><tr><th>Item</th><th class="num">Qty</th><th class="num">Amount</th></tr></thead><tbody><tr><td>Toor Dal 1kg</td><td class="num">2</td><td class="num">Rs.360.00</td></tr><tr><td>Sunflower Oil 1L</td><td class="num">4</td><td class="num">Rs.620.00</td></tr></tbody></table></div>',
           footerNote: 'Preview email - template design only',
         }),
       },
@@ -906,10 +906,10 @@ class EmailService {
         subject: `[PREVIEW] Cancellation Customer | Invoice: INV-2026-003 | ${config.store.name}`,
         html: renderEmail({
           badge: 'CANCELLATION CONFIRMED',
-          title: 'Order MK-2026-003 cancelled',
+          title: 'Order NZ-2026-003 cancelled',
           subtitle: 'Preview of customer cancellation email style',
           tone: 'danger',
-          content: '<div class="panel-danger"><div style="font-size:14px;color:#9f1239;font-weight:700;margin-bottom:6px;">Cancellation Confirmed</div><div class="muted" style="color:#9f1239;">This order will not be processed for pickup.</div></div><div class="metric-row"><div class="metric-box"><div class="metric-label">Cancelled Amount</div><div class="metric-value danger">Rs.899.00</div></div><div class="metric-box"><div class="metric-label">Order Date</div><div class="metric-value" style="font-size:14px;">01 Apr 2026</div></div><div class="metric-box"><div class="metric-label">Cancelled At</div><div class="metric-value" style="font-size:14px;">01 Apr 2026, 07:40 PM</div></div></div><div class="section box soft"><div class="kv"><div class="kv-item"><span class="kv-label">Order Number :</span> MK-2026-003</div><div class="kv-item"><span class="kv-label">Amount :</span> Rs.899.00</div><div class="kv-item"><span class="kv-label">Reason :</span> <span class="pill pill-danger">Customer request</span></div></div></div><div class="section panel-warning"><div class="muted" style="margin-bottom:6px;font-weight:700;color:#92400e;">What Happens Next</div><ul class="list"><li>If payment was already captured, refund will be processed as per policy.</li><li>Your cancelled items are removed from active fulfillment.</li><li>You can place a new order anytime from the app/site.</li></ul></div><div class="section"><div class="muted" style="margin-bottom:8px;font-weight:700;color:#334155;">Cancelled Items</div><table><thead><tr><th>Item</th><th class="num">Qty</th><th class="num">Amount</th></tr></thead><tbody><tr><td>Toor Dal 1kg</td><td class="num">2</td><td class="num">Rs.360.00</td></tr><tr><td>Sunflower Oil 1L</td><td class="num">4</td><td class="num">Rs.620.00</td></tr></tbody></table></div>',
+          content: '<div class="panel-danger"><div style="font-size:14px;color:#9f1239;font-weight:700;margin-bottom:6px;">Cancellation Confirmed</div><div class="muted" style="color:#9f1239;">This order will not be processed for pickup.</div></div><div class="metric-row"><div class="metric-box"><div class="metric-label">Cancelled Amount</div><div class="metric-value danger">Rs.899.00</div></div><div class="metric-box"><div class="metric-label">Order Date</div><div class="metric-value" style="font-size:14px;">01 Apr 2026</div></div><div class="metric-box"><div class="metric-label">Cancelled At</div><div class="metric-value" style="font-size:14px;">01 Apr 2026, 07:40 PM</div></div></div><div class="section box soft"><div class="kv"><div class="kv-item"><span class="kv-label">Order Number :</span> NZ-2026-003</div><div class="kv-item"><span class="kv-label">Amount :</span> Rs.899.00</div><div class="kv-item"><span class="kv-label">Reason :</span> <span class="pill pill-danger">Customer request</span></div></div></div><div class="section panel-warning"><div class="muted" style="margin-bottom:6px;font-weight:700;color:#92400e;">What Happens Next</div><ul class="list"><li>If payment was already captured, refund will be processed as per policy.</li><li>Your cancelled items are removed from active fulfillment.</li><li>You can place a new order anytime from the app/site.</li></ul></div><div class="section"><div class="muted" style="margin-bottom:8px;font-weight:700;color:#334155;">Cancelled Items</div><table><thead><tr><th>Item</th><th class="num">Qty</th><th class="num">Amount</th></tr></thead><tbody><tr><td>Toor Dal 1kg</td><td class="num">2</td><td class="num">Rs.360.00</td></tr><tr><td>Sunflower Oil 1L</td><td class="num">4</td><td class="num">Rs.620.00</td></tr></tbody></table></div>',
           footerNote: 'Preview email - template design only',
         }),
       },
@@ -928,10 +928,10 @@ class EmailService {
         subject: `[PREVIEW] Pending Order Reminder | Invoice: INV-2026-005 | ${config.store.name}`,
         html: renderEmail({
           badge: 'ORDER REMINDER',
-          title: 'Reminder for order MK-2026-005',
+          title: 'Reminder for order NZ-2026-005',
           subtitle: 'Preview of pending order reminder email',
           tone: 'warning',
-          content: '<div class="box"><div style="font-size:14px; line-height:1.8; color:#0f172a;"><div><strong>Order : </strong>MK-2026-005</div><div><strong>Status : </strong>pending</div><div><strong>Total : </strong>Rs.980.00</div></div></div>',
+          content: '<div class="box"><div style="font-size:14px; line-height:1.8; color:#0f172a;"><div><strong>Order : </strong>NZ-2026-005</div><div><strong>Status : </strong>pending</div><div><strong>Total : </strong>Rs.980.00</div></div></div>',
           footerNote: 'Preview email - template design only',
         }),
       },

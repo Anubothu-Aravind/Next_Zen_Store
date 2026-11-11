@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Admin Dashboard – MK Reddy General Store",
+  title: "Admin Dashboard – Next Zen Store",
 };
 export default function AdminLayout({ children }) {
   return <>{children}</>;

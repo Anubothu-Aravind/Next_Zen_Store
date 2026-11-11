@@ -1,7 +1,7 @@
 /**
  * migrate-mysql.js
  *
- * Creates the full MK Kirana Stores schema in MySQL 8+.
+ * Creates the full Next Zen Store schema in MySQL 8+.
  *
  * Usage:
  *   node src/database/migrate-mysql.js
@@ -57,7 +57,7 @@ async function createTable(c, sql, name) {
 // ─── main ────────────────────────────────────────────────────────────────────
 
 async function migrate() {
-  console.log('\n=== MK Kirana Stores — MySQL Migration ===');
+  console.log('\n=== Next Zen Store — MySQL Migration ===');
   console.log(`Target : ${MYSQL_DB}`);
 
   // ━━━ Step 1: Create database ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

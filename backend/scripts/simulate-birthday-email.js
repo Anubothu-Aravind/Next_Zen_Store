@@ -9,7 +9,7 @@ function generateCouponCode() {
 }
 
 function renderEmail({ badge, title, subtitle, tone = "success", content = "" }) {
-  const storeName = "MK Reddy General Stores";
+  const storeName = "Next Zen Store";
   const baseColor =
     tone === "warning"
       ? "#F59E0B"
@@ -51,7 +51,7 @@ function renderEmail({ badge, title, subtitle, tone = "success", content = "" })
       ${content}
       <div class="section">
         <p>Thank you for shopping with us!</p>
-        <p><a href="https://mkreddy.local">Visit Our Store</a></p>
+        <p><a href="https://nextzenstore.local">Visit Our Store</a></p>
       </div>
     </div>
     <div class="footer">
@@ -175,7 +175,7 @@ async function simulateBirthdayEmail() {
     console.log("\n=== EMAIL DETAILS ===");
     console.log(`To: ${offer.email}`);
     console.log(
-      `Subject: ${offer.offer_name} | Today | MK Reddy General Stores`,
+      `Subject: ${offer.offer_name} | Today | Next Zen Store`,
     );
     console.log(
       `\n✓ Birthday email simulation complete! Preview saved to email-preview-birthday.html\n`,

@@ -1,4 +1,4 @@
-# MK Reddy General Stores - SEO Robots File
+# Next Zen Store - SEO Robots File
 # Allow search engines to crawl and index our content
 
 User-agent: *
@@ -36,8 +36,8 @@ Allow: /products?q=
 Allow: /category/*?
 
 # Sitemap locations
-Sitemap: https://mkreddygeneralstore.com/sitemap.xml
-Sitemap: https://mkreddygeneralstore.com/api/sitemap.xml
+Sitemap: https://nextzenstore.com/sitemap.xml
+Sitemap: https://nextzenstore.com/api/sitemap.xml
 
 # Crawl delay to be respectful
 Crawl-delay: 1

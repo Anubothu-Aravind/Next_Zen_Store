@@ -4,7 +4,7 @@
   
   <!-- Header -->
   <rect width="1200" height="60" fill="#252526"/>
-  <text x="30" y="38" font-family="Consolas, monospace" font-size="20" font-weight="bold" fill="#4CAF50">MK Stores API Documentation</text>
+  <text x="30" y="38" font-family="Consolas, monospace" font-size="20" font-weight="bold" fill="#4CAF50">Next Zen Store API Documentation</text>
   <text x="1000" y="38" font-family="Arial, sans-serif" font-size="14" fill="#888">87+ Routes</text>
   
   <!-- Sidebar -->

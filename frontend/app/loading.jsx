@@ -4,7 +4,7 @@ export default function Loading() {
       { }
       <div className="relative">
         <div className="bg-blue-600 text-white font-extrabold text-2xl rounded-2xl w-16 h-16 flex items-center justify-center shadow-lg shadow-blue-200 animate-pulse">
-          MK
+          NZ
         </div>
         { }
         <div className="absolute inset-0 rounded-2xl border-4 border-blue-300 border-t-blue-600 animate-spin" />

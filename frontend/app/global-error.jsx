@@ -52,12 +52,12 @@ export default function GlobalError({ error, reset }) {
                 justifyContent: "center",
               }}
             >
-              MK
+              NZ
             </div>
             <span
               style={{ fontWeight: 700, fontSize: "1.1rem", color: "#111827" }}
             >
-              MK Reddy General Store
+              Next Zen Store
             </span>
           </div>
           <div

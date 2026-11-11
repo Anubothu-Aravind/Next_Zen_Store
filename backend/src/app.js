@@ -92,7 +92,7 @@ app.use('/api/v1', routes);
 app.get('/', (req, res) => {
   res.json({
     success: true,
-    message: 'MK Kirana Stores Backend API',
+    message: 'Next Zen Store Backend API',
     version: '1.0.0',
     documentation: '/api/v1',
     health: '/api/v1/health',

@@ -5,7 +5,7 @@
   <!-- Header -->
   <rect width="1200" height="80" fill="#2E7D32"/>
   <text x="30" y="50" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="white">Admin Dashboard</text>
-  <text x="1050" y="50" font-family="Arial, sans-serif" font-size="16" fill="white">MK Stores</text>
+  <text x="1050" y="50" font-family="Arial, sans-serif" font-size="16" fill="white">Next Zen Store</text>
   
   <!-- Stats Cards Row 1 -->
   <g transform="translate(30, 110)">

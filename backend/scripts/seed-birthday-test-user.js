@@ -46,7 +46,7 @@ async function seedBirthdayEligibleUser() {
         "Birthday Demo",
         phone,
         email,
-        "MK Reddy Demo Address",
+        "Next Zen Demo Address",
         dob,
       ],
     );
@@ -81,7 +81,7 @@ async function seedBirthdayEligibleUser() {
       "Birthday Demo",
       phone,
       email,
-      "MK Reddy Demo Address",
+      "Next Zen Demo Address",
       dob,
     ],
   );

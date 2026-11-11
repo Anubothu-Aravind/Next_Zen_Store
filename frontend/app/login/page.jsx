@@ -490,7 +490,7 @@ function LoginForm() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-green-600 rounded-2xl shadow-lg mb-4">
             <Store className="w-9 h-9 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">MK Reddy Stores</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Next Zen Store</h1>
           <p className="text-sm text-gray-500 mt-2">
             {step === "method-select"    && "Choose your sign-in method"}
             {step === "email-input"      && "Sign in with Email OTP"}
@@ -499,7 +499,7 @@ function LoginForm() {
             {step === "merge-prompt"     && "Phone number conflict"}
             {step === "merge-verify"     && "Verify both accounts"}
             {step === "profile-completion" && "Complete your profile"}
-            {step === "complete"         && "Welcome to MK Reddy Stores!"}
+            {step === "complete"         && "Welcome to Next Zen Store!"}
           </p>
         </div>
 
@@ -1128,7 +1128,7 @@ function LoginForm() {
                 <CheckCircle2 className="w-10 h-10 text-green-600" />
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Welcome to MK Reddy Stores!
+                Welcome to Next Zen Store!
               </h2>
               <p className="text-gray-600 mb-6">
                 Your account has been created successfully.

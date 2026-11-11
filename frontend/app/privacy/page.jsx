@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "Privacy Policy | MK Reddy General Stores",
-  description: "Privacy policy for MK Reddy General Stores.",
+  title: "Privacy Policy | Next Zen Store",
+  description: "Privacy policy for Next Zen Store.",
 };
 
 export default function PrivacyPage() {
@@ -11,7 +11,7 @@ export default function PrivacyPage() {
 
       <section className="space-y-4 leading-7">
         <p>
-          MK Reddy General Stores respects your privacy. We collect only the
+          Next Zen Store respects your privacy. We collect only the
           data needed to provide order, delivery, and account services.
         </p>
         <p>
@@ -30,8 +30,8 @@ export default function PrivacyPage() {
         </p>
         <p>
           To request correction or deletion of your account data, contact us at
-          <a className="ml-1 text-green-700 underline" href="mailto:mkreddygeneralstore@gmail.com">
-            mkreddygeneralstore@gmail.com
+          <a className="ml-1 text-green-700 underline" href="mailto:nextzenstore@gmail.com">
+            nextzenstore@gmail.com
           </a>
           .
         </p>

@@ -40,7 +40,7 @@ export const metadata = {
     "fresh vegetables",
     "daily essentials",
     "kirana store",
-    "MK Reddy General Stores",
+    "Next Zen Store",
     "Telugu grocery shopping",
     "buy groceries online",
     "grocery shopping India",
@@ -90,7 +90,7 @@ export const metadata = {
     title: SITE_NAME,
     description: SITE_DESCRIPTION,
     images: [`${SITE_URL}twitter-image.png`],
-    creator: "@MKReddy",
+    creator: "@NextZenStore",
   },
   verification: {
     google: "_trkSgcfuUr9gyQaGjH5E1wIkz5Ta6aorA0AzHdOSq4",

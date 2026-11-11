@@ -11,7 +11,7 @@ describe('API Integration Tests', () => {
     test('GET / should return basic info about the API', async () => {
       const response = await request(app).get('/');
       expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('message', 'MK Kirana Stores Backend API');
+      expect(response.body).toHaveProperty('message', 'Next Zen Store Backend API');
       expect(response.body).toHaveProperty('version', '1.0.0');
     });
   });

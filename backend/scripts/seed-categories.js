@@ -1,5 +1,5 @@
 /**
- * MK Reddy General Stores — Category Seed Script
+ * Next Zen Store — Category Seed Script
  *
  * Creates the full Indian kirana-store category hierarchy:
  *   Parent Category → Sub-categories
@@ -249,7 +249,7 @@ async function insertCategory(name, parentId, order) {
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 async function seed() {
-  console.log("\n🏪 MK Reddy General Stores — Category Seed");
+  console.log("\n🏪 Next Zen Store — Category Seed");
   console.log("─".repeat(52));
 
   let existing;

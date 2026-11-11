@@ -14,11 +14,11 @@ export async function generateMetadata({ params }) {
   const category = categories.find((c) => c.id === id);
   return {
     title: category?.name
-      ? `${category.name} | MK Reddy General Stores`
-      : "Category | MK Reddy General Stores",
+      ? `${category.name} | Next Zen Store`
+      : "Category | Next Zen Store",
     description:
       category?.description ||
-      `Shop ${category?.name || "products"} at MK Reddy General Stores`,
+      `Shop ${category?.name || "products"} at Next Zen Store`,
     openGraph: {
       title: category?.name ?? "Category",
       description: category?.description ?? "",

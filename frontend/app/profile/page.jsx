@@ -341,7 +341,7 @@ export default function ProfilePage() {
 
         {/* Footer */}
         <p className="text-center text-xs text-gray-400 pt-2">
-          MK Reddy General Store &middot; Your daily essentials
+          Next Zen Store &middot; Your daily essentials
         </p>
       </div>
     </div>

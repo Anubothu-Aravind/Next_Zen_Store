@@ -93,7 +93,7 @@ const FALLBACK_SLIDES = [
     name: "Shop by Category",
     productCount: 0,
     href: "/categories",
-    tag: "MK STORES",
+    tag: "NEXT ZEN",
     accent: "#229A4B",
     bg: "linear-gradient(130deg, #f2fdf5 0%, #ddf4e2 55%, #c4efce 100%)",
     image:
@@ -139,7 +139,7 @@ export default function MobileBannerCarousel() {
   const [shareMessage, setShareMessage] = useState("");
   const timerRef = useRef(null);
   const pointerActiveRef = useRef(false);
-  const SHARE_URL = "mkreddygeneralstore.com";
+  const SHARE_URL = "nextzenstore.com";
 
   const parentCategories = categories
     .filter((c) => !c.parent_id)
@@ -249,8 +249,8 @@ export default function MobileBannerCarousel() {
 
   const onShareSite = async () => {
     const shareData = {
-      title: "MK Reddy General Store",
-      text: "Shop groceries online from MK Reddy General Store",
+      title: "Next Zen Store",
+      text: "Shop groceries online from Next Zen Store",
       url: SHARE_URL,
     };
 

@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "Terms of Service | MK Reddy General Stores",
-  description: "Terms and conditions for MK Reddy General Stores.",
+  title: "Terms of Service | Next Zen Store",
+  description: "Terms and conditions for Next Zen Store.",
 };
 
 export default function TermsPage() {
@@ -11,7 +11,7 @@ export default function TermsPage() {
 
       <section className="space-y-4 leading-7">
         <p>
-          By using MK Reddy General Stores services, you agree to these terms.
+          By using Next Zen Store services, you agree to these terms.
           Please use the platform only for lawful purchases and account usage.
         </p>
         <p>
@@ -28,8 +28,8 @@ export default function TermsPage() {
         </p>
         <p>
           For help with orders, refunds, or policy questions, contact us at
-          <a className="ml-1 text-green-700 underline" href="mailto:mkreddygeneralstore@gmail.com">
-            mkreddygeneralstore@gmail.com
+          <a className="ml-1 text-green-700 underline" href="mailto:nextzenstore@gmail.com">
+            nextzenstore@gmail.com
           </a>
           .
         </p>
