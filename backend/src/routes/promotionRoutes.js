@@ -1,0 +1,17 @@
+const express = require('express');
+const router = express.Router();
+const promotionController = require('../controllers/promotionController');
+const { authenticate, authorize } = require('../middlewares/auth');
+router.get('/active', promotionController.getActivePromotions);
+router.get('/upcoming', promotionController.getUpcomingPromotions);
+router.get('/product-map', promotionController.getActiveProductMap);
+router.use(authenticate);
+router.use(authorize('admin'));
+router.get('/', promotionController.getAllPromotions);
+router.get('/:id', promotionController.getPromotion);
+router.post('/', promotionController.createPromotion);
+router.put('/:id', promotionController.updatePromotion);
+router.delete('/:id', promotionController.deletePromotion);
+router.put('/:id/toggle-active', promotionController.toggleActive);
+router.post('/:id/reset-deals',  promotionController.resetDeals);
+module.exports = router;

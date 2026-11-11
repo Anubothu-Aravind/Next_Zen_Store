@@ -1,0 +1,579 @@
+const { body, param, query, validationResult } = require("express-validator");
+const ApiError = require("./ApiError");
+const validate = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    // Transform validation errors into consistent API error format
+    const extractedErrors = errors.array().map((err) => ({
+      field: err.path,
+      message: err.msg,
+    }));
+    throw ApiError.badRequest("Validation failed", extractedErrors);
+  }
+  next();
+};
+const commonRules = {
+  id: (field = "id") =>
+    param(field).isUUID().withMessage(`${field} must be a valid UUID`),
+  uuid: (field = "id") =>
+    param(field).isUUID().withMessage(`${field} must be a valid UUID`),
+  bodyUuid: (field) =>
+    body(field).isUUID().withMessage(`${field} must be a valid UUID`),
+  phone: (field = "phone") =>
+    body(field)
+      .trim()
+      // Indian mobile format: starts with 6-9, followed by 9 more digits
+      .matches(/^[6-9]\d{9}$/)
+      .withMessage(
+        "Phone number must be a valid 10-digit Indian mobile number",
+      ),
+  email: (field = "email") =>
+    body(field)
+      .trim()
+      .isEmail()
+      .normalizeEmail()
+      .withMessage("Invalid email address"),
+  otp: (field = "otp") =>
+    body(field)
+      .trim()
+      .isLength({ min: 6, max: 6 })
+      .isNumeric()
+      .withMessage("OTP must be a 6-digit number"),
+  password: (field = "password") =>
+    body(field)
+      .isLength({ min: 8 })
+      .withMessage("Password must be at least 8 characters")
+      // Enforce strong passwords to protect customer accounts
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+      )
+      .withMessage(
+        "Password must contain uppercase, lowercase, number, and special character",
+      ),
+  name: (field = "name", minLength = 2, maxLength = 100) =>
+    body(field)
+      .trim()
+      .isLength({ min: minLength, max: maxLength })
+      .withMessage(
+        `${field} must be between ${minLength} and ${maxLength} characters`,
+      )
+      .matches(/^[a-zA-Z\s]+$/)
+      .withMessage(`${field} can only contain letters and spaces`),
+  nameTelugu: (field = "name_te") =>
+    body(field)
+      .optional({ nullable: true, checkFalsy: true })
+      .trim()
+      .isLength({ min: 2, max: 200 })
+      .withMessage(`${field} must be between 2 and 200 characters`),
+  string: (field, minLength = 1, maxLength = 255) =>
+    body(field)
+      .trim()
+      .isLength({ min: minLength, max: maxLength })
+      .withMessage(
+        `${field} must be between ${minLength} and ${maxLength} characters`,
+      ),
+  optionalString: (field, maxLength = 255) =>
+    body(field)
+      .optional()
+      .trim()
+      .isLength({ max: maxLength })
+      .withMessage(`${field} must not exceed ${maxLength} characters`),
+  number: (field, min = 0, max = Number.MAX_SAFE_INTEGER) =>
+    body(field)
+      .isFloat({ min, max })
+      .withMessage(`${field} must be a number between ${min} and ${max}`),
+  integer: (field, min = 0, max = Number.MAX_SAFE_INTEGER) =>
+    body(field)
+      .isInt({ min, max })
+      .withMessage(`${field} must be an integer between ${min} and ${max}`),
+  boolean: (field) =>
+    body(field).isBoolean().withMessage(`${field} must be a boolean`),
+  enum: (field, values) =>
+    body(field)
+      .isIn(values)
+      .withMessage(`${field} must be one of: ${values.join(", ")}`),
+  optionalEnum: (field, values) =>
+    body(field)
+      .optional()
+      .isIn(values)
+      .withMessage(`${field} must be one of: ${values.join(", ")}`),
+  array: (field, minLength = 1) =>
+    body(field)
+      .isArray({ min: minLength })
+      .withMessage(
+        `${field} must be an array with at least ${minLength} item(s)`,
+      ),
+  date: (field) =>
+    body(field)
+      .isISO8601()
+      .toDate()
+      .withMessage(`${field} must be a valid date`),
+  page: () =>
+    query("page")
+      .optional()
+      .isInt({ min: 1 })
+      .withMessage("Page must be a positive integer"),
+  limit: () =>
+    query("limit")
+      .optional()
+      .isInt({ min: 1, max: 100 })
+      .withMessage("Limit must be between 1 and 100"),
+  language: () =>
+    query("lang")
+      .optional()
+      .isIn(["en", "te"])
+      .withMessage("Language must be en or te"),
+  price: (field = "price") =>
+    body(field)
+      .isFloat({ min: 0.01 })
+      .withMessage(`${field} must be a positive number`),
+  quantity: (field = "quantity") =>
+    body(field)
+      .isInt({ min: 1 })
+      .withMessage(`${field} must be a positive integer`),
+  stock: (field = "stock_quantity") =>
+    body(field)
+      .isFloat({ min: 0 })
+      .withMessage(`${field} must be a non-negative number`),
+  gstPercentage: (field = "gst_percentage") =>
+    body(field)
+      .isFloat({ min: 0, max: 28 })
+      .withMessage(`${field} must be between 0 and 28`),
+  unitType: (field = "unit_type") =>
+    body(field)
+      .isIn(["kg", "piece", "case", "litre", "gram", "pack", "loose"])
+      .withMessage(
+        `${field} must be one of: kg, piece, case, litre, gram, pack, loose`,
+      ),
+};
+const userValidation = {
+  create: [
+    commonRules.name("name"),
+    commonRules.phone("phone"),
+    body("email")
+      .optional()
+      .isEmail()
+      .normalizeEmail()
+      .withMessage("Invalid email address"),
+    body("user_type")
+      .optional()
+      .isIn(["retail", "wholesale", "admin"])
+      .withMessage("User type must be retail, wholesale, or admin"),
+    body("address")
+      .optional()
+      .trim()
+      .isLength({ max: 500 })
+      .withMessage("Address must not exceed 500 characters"),
+    body("password")
+      .optional()
+      .isLength({ min: 6 })
+      .withMessage("Password must be at least 6 characters"),
+    body("role_id")
+      .optional()
+      .isUUID()
+      .withMessage("Role ID must be a valid UUID"),
+    validate,
+  ],
+  register: [
+    commonRules.name("name"),
+    body("display_name")
+      .optional({ nullable: true, checkFalsy: true })
+      .trim()
+      .isLength({ min: 2, max: 100 })
+      .withMessage("display_name must be between 2 and 100 characters"),
+    body("date_of_birth")
+      .optional({ nullable: true, checkFalsy: true })
+      .isISO8601()
+      .withMessage("date_of_birth must be a valid date in YYYY-MM-DD format"),
+    commonRules.phone("phone"),
+    body("user_type")
+      .isIn(["retail", "wholesale"])
+      .withMessage("User type must be retail or wholesale"),
+    body("address")
+      .optional()
+      .trim()
+      .isLength({ max: 500 })
+      .withMessage("Address must not exceed 500 characters"),
+    validate,
+  ],
+  sendOtp: [commonRules.phone("phone"), validate],
+  verifyOtp: [commonRules.phone("phone"), commonRules.otp("otp"), validate],
+  update: [
+    commonRules.name("name").optional(),
+    body("display_name")
+      .optional({ nullable: true, checkFalsy: true })
+      .trim()
+      .isLength({ min: 2, max: 100 })
+      .withMessage("display_name must be between 2 and 100 characters"),
+    body("date_of_birth")
+      .optional({ nullable: true, checkFalsy: true })
+      .isISO8601()
+      .withMessage("date_of_birth must be a valid date in YYYY-MM-DD format"),
+    body("address")
+      .optional()
+      .trim()
+      .isLength({ max: 500 })
+      .withMessage("Address must not exceed 500 characters"),
+    validate,
+  ],
+};
+const categoryValidation = {
+  create: [
+    commonRules.string("name_en", 2, 100),
+    commonRules.nameTelugu("name_te"),
+    body("parent_id")
+      .optional({ nullable: true })
+      .isUUID()
+      .withMessage("parent_id must be a valid UUID"),
+    body("description_en").optional().trim().isLength({ max: 500 }),
+    body("description_te").optional().trim().isLength({ max: 500 }),
+    body("is_active").optional().isBoolean(),
+    validate,
+  ],
+  update: [
+    commonRules.string("name_en", 2, 100).optional(),
+    commonRules.nameTelugu("name_te"),
+    body("parent_id")
+      .optional({ nullable: true })
+      .isUUID()
+      .withMessage("parent_id must be a valid UUID"),
+    body("description_en").optional().trim().isLength({ max: 500 }),
+    body("description_te").optional().trim().isLength({ max: 500 }),
+    body("is_active").optional().isBoolean(),
+    validate,
+  ],
+};
+const productValidation = {
+  create: [
+    commonRules.string("name_en", 2, 200),
+    commonRules.nameTelugu("name_te"),
+    commonRules.bodyUuid("category_id"),
+    body("brand").optional({ nullable: true }).trim().isLength({ max: 100 }).withMessage("brand must not exceed 100 characters"),
+    body("variant").optional({ nullable: true }).trim().isLength({ max: 100 }).withMessage("variant must not exceed 100 characters"),
+    body("unit_type").optional({ nullable: true }).trim().isLength({ max: 50 }).withMessage("unit_type must not exceed 50 characters"),
+    body("unit_pack_size").optional({ nullable: true }).trim().isLength({ max: 100 }).withMessage("unit_pack_size must not exceed 100 characters"),
+    body("hsn_code").optional({ nullable: true }).trim().isLength({ max: 20 }).withMessage("hsn_code must not exceed 20 characters"),
+    commonRules.price("price"),
+    body("mrp").optional().isFloat({ min: 0.01 }).withMessage("MRP must be a positive number"),
+    body("wholesale_price").optional({ nullable: true }).isFloat({ min: 0 }).withMessage("Wholesale price must be >= 0"),
+    body("purchase_price").optional({ nullable: true }).isFloat({ min: 0 }).withMessage("Purchase price must be >= 0"),
+    commonRules.gstPercentage("gst_percentage").optional(),
+    commonRules.stock("stock_quantity").optional(),
+    body("low_stock_threshold").optional().isInt({ min: 0 }).withMessage("low_stock_threshold must be a non-negative integer"),
+    body("description_en").optional().trim().isLength({ max: 1000 }),
+    body("description_te").optional().trim().isLength({ max: 1000 }),
+    body("sku").optional().trim().isLength({ max: 50 }),
+    body("is_active").optional().isBoolean(),
+    validate,
+  ],
+  update: [
+    commonRules.string("name_en", 2, 200).optional(),
+    commonRules.nameTelugu("name_te"),
+    commonRules.bodyUuid("category_id").optional(),
+    body("brand").optional({ nullable: true }).trim().isLength({ max: 100 }).withMessage("brand must not exceed 100 characters"),
+    body("variant").optional({ nullable: true }).trim().isLength({ max: 100 }).withMessage("variant must not exceed 100 characters"),
+    body("unit_type").optional({ nullable: true }).trim().isLength({ max: 50 }).withMessage("unit_type must not exceed 50 characters"),
+    body("unit_pack_size").optional({ nullable: true }).trim().isLength({ max: 100 }).withMessage("unit_pack_size must not exceed 100 characters"),
+    body("hsn_code").optional({ nullable: true }).trim().isLength({ max: 20 }).withMessage("hsn_code must not exceed 20 characters"),
+    commonRules.price("price").optional(),
+    body("mrp").optional().isFloat({ min: 0.01 }).withMessage("MRP must be a positive number"),
+    body("wholesale_price").optional({ nullable: true }).isFloat({ min: 0 }).withMessage("Wholesale price must be >= 0"),
+    body("purchase_price").optional({ nullable: true }).isFloat({ min: 0 }).withMessage("Purchase price must be >= 0"),
+    commonRules.gstPercentage("gst_percentage").optional(),
+    commonRules.stock("stock_quantity").optional(),
+    body("low_stock_threshold").optional().isInt({ min: 0 }).withMessage("low_stock_threshold must be a non-negative integer"),
+    body("description_en").optional().trim().isLength({ max: 1000 }),
+    body("description_te").optional().trim().isLength({ max: 1000 }),
+    body("sku").optional().trim().isLength({ max: 50 }).withMessage("sku must not exceed 50 characters"),
+    body("is_active").optional().isBoolean(),
+    validate,
+  ],
+};
+const cartValidation = {
+  addItem: [
+    commonRules.bodyUuid("product_id"),
+    commonRules.quantity("quantity"),
+    validate,
+  ],
+  updateItem: [commonRules.quantity("quantity"), validate],
+};
+const orderValidation = {
+  create: [
+    body("notes")
+      .optional()
+      .trim()
+      .isLength({ max: 500 })
+      .withMessage("Notes must not exceed 500 characters"),
+    body("birthday_coupon_code")
+      .optional({ nullable: true, checkFalsy: true })
+      .trim()
+      .isLength({ max: 40 })
+      .matches(/^[A-Za-z0-9-]+$/)
+      .withMessage("birthday_coupon_code must be alphanumeric and may include hyphen"),
+    validate,
+  ],
+  updateStatus: [
+    body("status")
+      .isIn([
+        "pending",
+        "confirmed",
+        "ready_for_pickup",
+        "picked_up",
+      ])
+      .withMessage("Invalid order status"),
+    body("notes").optional().trim().isLength({ max: 500 }),
+    validate,
+  ],
+};
+const paginationValidation = [
+  commonRules.page(),
+  commonRules.limit(),
+  commonRules.language(),
+  validate,
+];
+const authValidation = {
+  // Google OAuth 2.0 Validation
+  googleLogin: [
+    body("idToken")
+      .trim()
+      .notEmpty()
+      .withMessage("Google ID token is required"),
+    validate,
+  ],
+  googleRegister: [
+    body("name")
+      .trim()
+      .isLength({ min: 2, max: 100 })
+      .withMessage("Name must be between 2 and 100 characters"),
+    body("display_name")
+      .optional({ nullable: true, checkFalsy: true })
+      .trim()
+      .isLength({ min: 2, max: 100 })
+      .withMessage("display_name must be between 2 and 100 characters"),
+    body("date_of_birth")
+      .optional({ nullable: true, checkFalsy: true })
+      .isISO8601()
+      .withMessage("date_of_birth must be a valid date in YYYY-MM-DD format"),
+    commonRules.phone("phone"),
+    commonRules.email("email"),
+    body("googleId")
+      .trim()
+      .notEmpty()
+      .withMessage("Google ID is required"),
+    body("user_type")
+      .optional()
+      .isIn(["retail", "wholesale"])
+      .withMessage("User type must be retail or wholesale"),
+    body("address").optional().trim().isLength({ max: 500 }),
+    body("picture").optional().trim().isURL().withMessage("Picture must be a valid URL"),
+    validate,
+  ],
+
+  
+  // Customer Email OTP Validation (New)
+  sendEmailOTP: [commonRules.email("email"), validate],
+  verifyEmailOTP: [commonRules.email("email"), commonRules.otp("otp"), validate],
+  emailOTPRegister: [
+    body("name")
+      .trim()
+      .isLength({ min: 2, max: 100 })
+      .withMessage("Name must be between 2 and 100 characters"),
+    body("display_name")
+      .optional({ nullable: true, checkFalsy: true })
+      .trim()
+      .isLength({ min: 2, max: 100 })
+      .withMessage("display_name must be between 2 and 100 characters"),
+    body("date_of_birth")
+      .optional({ nullable: true, checkFalsy: true })
+      .isISO8601()
+      .withMessage("date_of_birth must be a valid date in YYYY-MM-DD format"),
+    commonRules.phone("phone"),
+    commonRules.email("email"),
+    body("user_type")
+      .optional()
+      .isIn(["retail", "wholesale"])
+      .withMessage("User type must be retail or wholesale"),
+    body("address").optional().trim().isLength({ max: 500 }),
+    validate,
+  ],
+  
+  adminLogin: [
+    body("identifier")
+      .trim()
+      .notEmpty()
+      .withMessage("Email or phone is required"),
+    body("password").notEmpty().withMessage("Password is required"),
+    validate,
+  ],
+  refreshToken: [
+    body("refresh_token").notEmpty().withMessage("Refresh token is required"),
+    validate,
+  ],
+  changePassword: [
+    body("currentPassword")
+      .notEmpty()
+      .withMessage("Current password is required"),
+    body("newPassword")
+      .isLength({ min: 8 })
+      .withMessage("New password must be at least 8 characters"),
+    validate,
+  ],
+  updateProfile: [
+    body("name")
+      .optional({ nullable: true, checkFalsy: true })
+      .trim()
+      .isLength({ min: 2, max: 100 })
+      .withMessage("name must be between 2 and 100 characters"),
+    body("display_name")
+      .optional({ nullable: true, checkFalsy: true })
+      .trim()
+      .isLength({ min: 2, max: 100 })
+      .withMessage("display_name must be between 2 and 100 characters"),
+    body("date_of_birth")
+      .optional({ nullable: true, checkFalsy: true })
+      .isISO8601()
+      .withMessage("date_of_birth must be a valid date in YYYY-MM-DD format"),
+    body("email")
+      .optional({ nullable: true, checkFalsy: true })
+      .trim()
+      .isEmail()
+      .normalizeEmail()
+      .withMessage("Invalid email address"),
+    body("address")
+      .optional({ nullable: true, checkFalsy: true })
+      .trim()
+      .isLength({ max: 500 })
+      .withMessage("Address must not exceed 500 characters"),
+    validate,
+  ],
+};
+const invoiceValidation = {
+  markAsPaid: [
+    body("payment_method")
+      .optional()
+      .isIn(["cash", "card", "upi", "bank_transfer"])
+      .withMessage("Invalid payment method"),
+    body("payment_reference").optional().trim().isLength({ max: 100 }),
+    body("notes").optional().trim().isLength({ max: 500 }),
+    validate,
+  ],
+};
+const adminValidation = {
+  systemConfig: [
+    body("key").trim().notEmpty().withMessage("Config key is required"),
+    body("value").notEmpty().withMessage("Config value is required"),
+    body("category").optional().trim(),
+    body("description").optional().trim().isLength({ max: 255 }),
+    validate,
+  ],
+  gstConfig: [
+    body("category_name").optional().trim().isLength({ min: 2, max: 100 }),
+    body("hsn_code").optional().trim(),
+    body("cgst_rate").optional().isFloat({ min: 0, max: 50 }),
+    body("sgst_rate").optional().isFloat({ min: 0, max: 50 }),
+    body("igst_rate").optional().isFloat({ min: 0, max: 50 }),
+    body("is_active").optional().isBoolean(),
+    validate,
+  ],
+};
+const validateSendEmailOTP = authValidation.sendEmailOTP;
+const validateVerifyEmailOTP = authValidation.verifyEmailOTP;
+const validateEmailOTPRegister = authValidation.emailOTPRegister;
+const validateGoogleLogin = authValidation.googleLogin;
+const validateGoogleRegister = authValidation.googleRegister;
+const validateAdminLogin = authValidation.adminLogin;
+const validateRefreshToken = authValidation.refreshToken;
+const validateUpdateProfile = authValidation.updateProfile;
+const validateCreateUser = userValidation.create;
+const validateUpdateUser = userValidation.update;
+const validateCreateCategory = categoryValidation.create;
+const validateUpdateCategory = categoryValidation.update;
+const validateCreateProduct = productValidation.create;
+const validateUpdateProduct = productValidation.update;
+const validateStockUpdate = [
+  commonRules.integer("quantity", 0),
+  body("operation")
+    .isIn(["add", "subtract", "set"])
+    .withMessage("Operation must be add, subtract, or set"),
+  validate,
+];
+const validateAddToCart = cartValidation.addItem;
+const validateUpdateCartItem = cartValidation.updateItem;
+const validateCreateOrder = orderValidation.create;
+const validateUpdateOrderStatus = orderValidation.updateStatus;
+const validateCancelOrder = [
+  body("reason").optional().trim().isLength({ max: 500 }),
+  body("reason_code")
+    .optional()
+    .isIn([
+      "out_of_stock",
+      "product_unavailable",
+      "delivery_not_serviceable",
+      "price_mismatch",
+      "payment_issue",
+      "duplicate_or_fraudulent",
+      "other",
+    ])
+    .withMessage("Invalid cancellation reason code"),
+  body("reason_custom")
+    .optional()
+    .trim()
+    .isLength({ max: 500 })
+    .withMessage("Custom cancellation reason must not exceed 500 characters"),
+  body().custom((_, { req }) => {
+    const isAdmin = req.user?.role === "admin";
+    if (!isAdmin) return true;
+
+    const reason = typeof req.body.reason === "string" ? req.body.reason.trim() : "";
+    const reasonCode = typeof req.body.reason_code === "string" ? req.body.reason_code.trim() : "";
+    const reasonCustom = typeof req.body.reason_custom === "string" ? req.body.reason_custom.trim() : "";
+
+    if (!reason && !reasonCode) {
+      throw new Error("Cancellation reason is required for admin");
+    }
+    if (reasonCode === "other" && !reasonCustom && !reason) {
+      throw new Error("Custom cancellation reason is required when reason code is other");
+    }
+    return true;
+  }),
+  validate,
+];
+const validateMarkAsPaid = invoiceValidation.markAsPaid;
+const validateSystemConfig = adminValidation.systemConfig;
+const validateGSTConfig = adminValidation.gstConfig;
+module.exports = {
+  validate,
+  commonRules,
+  userValidation,
+  categoryValidation,
+  productValidation,
+  cartValidation,
+  orderValidation,
+  paginationValidation,
+  authValidation,
+  invoiceValidation,
+  adminValidation,
+  validateSendEmailOTP,
+  validateVerifyEmailOTP,
+  validateEmailOTPRegister,
+  validateGoogleLogin,
+  validateGoogleRegister,
+  validateAdminLogin,
+  validateRefreshToken,
+  validateUpdateProfile,
+  validateCreateUser,
+  validateUpdateUser,
+  validateCreateCategory,
+  validateUpdateCategory,
+  validateCreateProduct,
+  validateUpdateProduct,
+  validateStockUpdate,
+  validateAddToCart,
+  validateUpdateCartItem,
+  validateCreateOrder,
+  validateUpdateOrderStatus,
+  validateCancelOrder,
+  validateMarkAsPaid,
+  validateSystemConfig,
+  validateGSTConfig,
+};

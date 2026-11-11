@@ -1,0 +1,419 @@
+const { Order, Cart, User, Invoice, AdminLog, Promotion, AdminNotification, Product } = require('../models');
+const ApiError = require('../utils/ApiError');
+const logger = require('../utils/logger');
+const emailService = require('./emailService');
+const stockAlertService = require('./stockAlertService');
+const StoreSetting = require('../models/StoreSetting');
+const birthdayOfferService = require('./birthdayOfferService');
+
+const ADMIN_CANCEL_REASON_LABELS = {
+  out_of_stock: 'Out of stock',
+  product_unavailable: 'Product unavailable',
+  delivery_not_serviceable: 'Delivery not serviceable',
+  price_mismatch: 'Price mismatch',
+  payment_issue: 'Payment issue',
+  duplicate_or_fraudulent: 'Duplicate or fraudulent order',
+};
+
+class OrderService {
+  static normalizeCancellationReason(reasonInput, isAdmin = false) {
+    if (typeof reasonInput === 'string') {
+      const txt = reasonInput.trim();
+      if (txt) return txt;
+      return isAdmin ? 'Cancelled by admin' : 'Customer requested cancellation';
+    }
+
+    const payload = reasonInput && typeof reasonInput === 'object' ? reasonInput : {};
+    const legacy = typeof payload.reason === 'string' ? payload.reason.trim() : '';
+    const reasonCode = typeof payload.reason_code === 'string' ? payload.reason_code.trim() : '';
+    const reasonCustom = typeof payload.reason_custom === 'string' ? payload.reason_custom.trim() : '';
+
+    if (isAdmin) {
+      if (legacy) return legacy;
+      if (reasonCode === 'other') {
+        if (reasonCustom) return reasonCustom;
+        return 'Cancelled by admin';
+      }
+      if (reasonCode && ADMIN_CANCEL_REASON_LABELS[reasonCode]) {
+        return ADMIN_CANCEL_REASON_LABELS[reasonCode];
+      }
+      return 'Cancelled by admin';
+    }
+
+    if (legacy) return legacy;
+    if (reasonCustom) return reasonCustom;
+    return 'Customer requested cancellation';
+  }
+
+  static async handleCancellationSideEffects(order, reasonText, cancelledBy = 'customer') {
+    // Cancelled orders should not keep pending-order reminders open.
+    AdminNotification.resolveForOrder(order.id, 'pending_order').catch(() => {});
+
+    const isAdminCancelled = cancelledBy === 'admin';
+    const notificationType = isAdminCancelled ? 'order_cancelled_by_admin' : 'order_cancelled_by_customer';
+    const title = isAdminCancelled
+      ? `Order ${order.order_number} cancelled by admin`
+      : `Order ${order.order_number} cancelled by customer`;
+    const message = isAdminCancelled
+      ? `Admin cancelled order ${order.order_number}. Reason: ${reasonText}.`
+      : `Customer cancelled order ${order.order_number}${reasonText ? ` (${reasonText})` : ''}.`;
+
+    try {
+      await AdminNotification.createOrderNotification({
+        type: notificationType,
+        title,
+        message,
+        orderId: order.id,
+      });
+    } catch (err) {
+      logger.error('[notifications] failed to create cancellation notification:', err);
+    }
+
+    try {
+      const customer = await User.findById(order.user_id).catch(() => null);
+      const fallbackEmail = typeof order?.customer_email === 'string' ? order.customer_email.trim() : '';
+      const targetEmail = customer?.email || fallbackEmail || null;
+
+      if (targetEmail) {
+        await emailService.sendCustomerOrderCancellationNotification(
+          order,
+          {
+            ...(customer || {}),
+            name: customer?.name || order?.customer_name || 'Customer',
+            email: targetEmail,
+          },
+          reasonText
+        );
+      } else {
+        logger.warn(`[email] cancellation email skipped for order ${order.order_number}: no customer email available`);
+      }
+    } catch (err) {
+      logger.error('[email] failed to send customer cancellation email:', err);
+    }
+  }
+
+  static async createOrder(userId, notes = null, lang = 'en', userType = 'retail', birthdayCouponCode = null) {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw ApiError.notFound('User not found');
+    }
+    const gstConfig = await StoreSetting.getGstConfig();
+    const cart = await Cart.getWithItems(userId, lang, gstConfig, userType);
+    if (cart.items.length === 0) {
+      throw ApiError.badRequest('Cart is empty');
+    }
+    // Final safety check before order creation - prices/stock may have changed
+    const validation = await Cart.validateItems(userId);
+    if (!validation.valid) {
+      throw ApiError.badRequest('Cart has issues', validation.issues);
+    }
+    // Sync prices one last time to ensure customer pays current market price
+    let wsPct = 0;
+    if (userType === 'wholesale') {
+      const setting = await StoreSetting.get('wholesale_discount_pct');
+      wsPct = setting ? parseFloat(setting.value) || 0 : 0;
+    }
+    await Cart.syncPrices(userId, userType, wsPct);
+    const updatedCart = await Cart.getWithItems(userId, lang, gstConfig, userType);
+    // Calculate best promotion discount for this order
+    let promoDiscount = 0;
+    let promoId = null;
+    let promoTitle = null;
+    let promoFreeProductId = null;
+    // Track which products qualify for a deal (for claiming after order is placed)
+    const dealClaimsNeeded = []; // [{promotionId, productId}]
+    try {
+      const promoMap = await Promotion.getActiveProductMap();
+      // Group items by promotion to calculate total discount per promotion
+      const promoTotals = {};
+      for (const item of updatedCart.items) {
+        const p = promoMap[item.product_id];
+        // Skip: no promo or deal-order cap exhausted
+        if (!p || p.deal_exhausted) continue;
+        // For percentage promos, also guard per-item unit cap.
+        // Flat promos are order-level (not per-unit), so skip item_limit check for them.
+        if (p.discount_type !== 'flat' && p.item_limit !== null && (p.items_claimed + item.quantity) > p.item_limit) continue;
+        const key = p.promotion_id;
+        if (!promoTotals[key]) {
+          promoTotals[key] = {
+            discount: 0, title: p.title,
+            discount_type: p.discount_type,
+            discount_value: parseFloat(p.discount_value),
+            qualifyingTotal: 0,
+            products: [],
+          };
+        }
+        promoTotals[key].qualifyingTotal += item.item_total;
+        promoTotals[key].products.push({ promotionId: key, productId: item.product_id, qty: item.quantity });
+      }
+      // Calculate discount for each promotion and choose the best one for customer
+      for (const [pid, info] of Object.entries(promoTotals)) {
+        let d = 0;
+        if (info.discount_type === 'flat') {
+          // ₹X off per qualifying PRODUCT in cart (regardless of qty of that product).
+          // e.g. 2 products × ₹25 = ₹50 off; 1 product qty 10 = still ₹25 off.
+          d = Math.min(info.discount_value * info.products.length, info.qualifyingTotal);
+        } else {
+          d = parseFloat(((info.qualifyingTotal * info.discount_value) / 100).toFixed(2));
+          d = Math.min(d, info.qualifyingTotal);
+        }
+        if (d > promoDiscount) {
+          promoDiscount = parseFloat(d.toFixed(2));
+          promoId = pid;
+          promoTitle = info.title;
+          dealClaimsNeeded.length = 0;
+          if (info.discount_type === 'flat') {
+            // Flat = one order-level deal slot regardless of product count.
+            // items_claimed tracks total units across all qualifying products.
+            const totalQty = info.products.reduce((s, p) => s + p.qty, 0);
+            dealClaimsNeeded.push({
+              promotionId: pid,
+              productId: info.products[0].productId,
+              qty: totalQty,
+              isFlat: true,
+            });
+          } else {
+            // Percentage = per-product deal; claim once per qualifying product.
+            dealClaimsNeeded.push(...info.products);
+          }
+        }
+      }
+      // Also evaluate threshold promotions (entire-cart discount based on cart total)
+      const thresholdPromos = await Promotion.getActiveThresholdPromos();
+      if (thresholdPromos.length > 0) {
+        const cartSubtotal = updatedCart.items.reduce((s, i) => s + parseFloat(i.item_total), 0);
+        for (const tp of thresholdPromos) {
+          const minAmt = parseFloat(tp.min_order_amount || 0);
+          if (minAmt <= 0) continue; // not properly configured — skip
+          if (cartSubtotal < minAmt) continue; // threshold not reached
+          if (tp.reward_type === 'free_item') {
+            // Free item — no monetary discount; only claim if no monetary promo already applied
+            if (promoDiscount === 0 && !promoFreeProductId) {
+              promoId = tp.id;
+              promoTitle = tp.title;
+              promoFreeProductId = tp.free_product_id || null;
+              dealClaimsNeeded.length = 0;
+            }
+          } else {
+            let d = 0;
+            if (tp.reward_type === 'cash_off') {
+              d = Math.min(parseFloat(tp.discount_value), cartSubtotal);
+            } else if (tp.reward_type === 'percentage') {
+              d = parseFloat(((cartSubtotal * parseFloat(tp.discount_value)) / 100).toFixed(2));
+              d = Math.min(d, cartSubtotal);
+            } else {
+              d = Math.min(parseFloat(tp.discount_value || 0), cartSubtotal);
+            }
+            if (d > promoDiscount) {
+              promoDiscount = parseFloat(d.toFixed(2));
+              promoId = tp.id;
+              promoTitle = tp.title;
+              promoFreeProductId = null; // monetary discount overrides free item
+              dealClaimsNeeded.length = 0;
+            }
+          }
+        }
+      }
+    } catch (err) {
+      // Never fail order creation due to promotion errors - customer experience comes first
+      logger.error('Promotion discount calc failed (order will proceed without discount):', err);
+    }
+    // Ensure promoId is a valid UUID or null (prevent 22P02 from bad promo data)
+    const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (promoId && !UUID_RE.test(promoId)) {
+      logger.warn('Invalid promotion ID discarded before order creation:', promoId);
+      promoId = null;
+      promoDiscount = 0;
+      promoTitle = null;
+    }
+    if (promoFreeProductId && !UUID_RE.test(promoFreeProductId)) {
+      logger.warn('Invalid free product ID discarded before order creation:', promoFreeProductId);
+      promoFreeProductId = null;
+    }
+
+    let birthdayPromo = null;
+    try {
+      birthdayPromo = await birthdayOfferService.previewCouponDiscount({
+        userId,
+        couponCode: birthdayCouponCode,
+        cartSubtotal: updatedCart.subtotal,
+      });
+    } catch (err) {
+      logger.warn('Birthday coupon preview failed (continuing without birthday discount):', err?.message || err);
+    }
+
+    const { orderId, orderNumber } = await Order.createFromCart(userId, updatedCart, notes, {
+      promotionId: promoId,
+      promotionDiscount: promoDiscount,
+      promotionTitle: promoTitle,
+      freeProductId: promoFreeProductId,
+      birthdayOfferId: birthdayPromo?.offerId || null,
+      birthdayCouponCode: birthdayPromo?.couponCode || null,
+      birthdayDiscount: birthdayPromo?.discountAmount || 0,
+      birthdayOfferTitle: birthdayPromo?.offerTitle || null,
+    });
+    const order = await Order.findById(orderId, lang);
+    await Invoice.create(order, user);
+
+    // Create an in-app admin notification for every new order.
+    try {
+      await AdminNotification.createOrderNotification({
+        type: 'new_order',
+        title: `New Order: ${order.order_number}`,
+        message: `${user.name || 'Customer'} placed order ${order.order_number} for Rs.${parseFloat(order.total_amount || 0).toFixed(2)}.`,
+        orderId: order.id,
+      });
+    } catch (err) {
+      logger.error('[notifications] failed to create new order notification:', err);
+    }
+
+    // Atomically claim limited deals for each qualifying product.
+    // Fire-and-forget: failures must not block the order response.
+    if (dealClaimsNeeded.length > 0) {
+      Promise.all(
+        dealClaimsNeeded.map(({ promotionId, productId, qty }) =>
+          Promotion.claimDeal(promotionId, productId, qty || 1).catch((err) =>
+            logger.warn(`Deal claim failed (promo=${promotionId}, product=${productId}):`, err)
+          )
+        )
+      ).catch(() => {/* already caught per-item above */});
+    }
+
+    // Check stock thresholds for every product touched by this order.
+    // Keep this independent from email lookup so alerts still work if email lookup fails.
+    const productIds = [...new Set(
+      updatedCart.items.map((i) => i.parent_product_id || i.product_id)
+    )];
+    stockAlertService
+      .checkAndAlertMany(productIds, Product.findById.bind(Product))
+      .catch((err) => logger.error('[stock-alert] checkAndAlertMany failed (order):', err));
+
+    // Fire-and-forget emails — never block the order response.
+    User.findAdminEmails()
+      .then(async (adminEmails) => {
+        await Promise.allSettled([
+          emailService.sendAdminOrderNotification(order, user, adminEmails),
+          user.email ? emailService.sendOrderConfirmation(order, user) : Promise.resolve(),
+        ]);
+      })
+      .catch((err) => logger.error('[email] failed to resolve admin recipients for order notification:', err));
+
+    logger.info(`Order created: ${orderNumber} by user ${userId}`);
+    return order;
+  }
+  static async getById(orderId, lang = 'en') {
+    const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!orderId || !UUID_RE.test(orderId)) {
+      throw ApiError.notFound('Order not found');
+    }
+    const order = await Order.findById(orderId, lang);
+    if (!order) {
+      throw ApiError.notFound('Order not found');
+    }
+    return order;
+  }
+  static async getByOrderNumber(orderNumber, lang = 'en') {
+    const order = await Order.findByOrderNumber(orderNumber, lang);
+    if (!order) {
+      throw ApiError.notFound('Order not found');
+    }
+    return order;
+  }
+  static async getUserOrders(userId, options = {}) {
+    return Order.findByUser(userId, options);
+  }
+  static async getAllOrders(options = {}) {
+    return Order.findAll(options);
+  }
+  static async updateStatus(orderId, status, notes = null, adminId = null) {
+    const order = await Order.findById(orderId);
+    if (!order) {
+      throw ApiError.notFound('Order not found');
+    }
+    // Define allowed status transitions to prevent invalid states (e.g., can't unpick a picked_up order)
+    const validTransitions = {
+      pending: ['confirmed', 'cancelled'],
+      confirmed: ['ready_for_pickup', 'cancelled'],
+      ready_for_pickup: ['picked_up', 'cancelled'],
+      picked_up: [], // Final state - cannot change
+      cancelled: [], // Final state - cannot change
+    };
+    if (!validTransitions[order.status].includes(status)) {
+      throw ApiError.badRequest(
+        `Cannot change order status from '${order.status}' to '${status}'`
+      );
+    }
+    if (status === 'cancelled') {
+      throw ApiError.badRequest('Use cancel action with reason to cancel orders');
+    }
+
+    await Order.updateStatus(orderId, status, notes);
+    // Close pending-order reminders when order is no longer pending/confirmed.
+    if (!['pending', 'confirmed'].includes(status)) {
+      AdminNotification.resolveForOrder(orderId, 'pending_order').catch(() => {});
+    }
+
+    // Email customer at key fulfillment milestones.
+    if (status === 'ready_for_pickup') {
+      const customer = await User.findById(order.user_id);
+      if (customer) {
+        const readyOrder = await Order.findById(orderId);
+        emailService.sendOrderReadyNotification(readyOrder, customer)
+          .catch((err) => logger.error('Ready-for-pickup email failed:', err));
+      }
+    }
+    if (status === 'picked_up') {
+      const customer = await User.findById(order.user_id);
+      if (customer) {
+        const pickedOrder = await Order.findById(orderId);
+        emailService.sendOrderPickedUpNotification(pickedOrder, customer)
+          .catch((err) => logger.error('Picked-up confirmation email failed:', err));
+      }
+    }
+    if (adminId) {
+      await AdminLog.create({
+        adminId,
+        action: 'UPDATE_ORDER_STATUS',
+        entityType: 'order',
+        entityId: orderId,
+        oldValue: { status: order.status },
+        newValue: { status, notes },
+      });
+    }
+    const updatedOrder = await Order.findById(orderId);
+    return updatedOrder;
+  }
+  static async cancelOrder(orderId, reason, userId = null, adminId = null) {
+    const order = await Order.findById(orderId);
+    if (!order) {
+      throw ApiError.notFound('Order not found');
+    }
+    if (userId && order.user_id !== userId) {
+      throw ApiError.forbidden('You can only cancel your own orders');
+    }
+    if (!['pending', 'confirmed'].includes(order.status)) {
+      throw ApiError.badRequest('Order cannot be cancelled at this stage');
+    }
+    const isAdmin = Boolean(adminId);
+    const reasonText = this.normalizeCancellationReason(reason, isAdmin);
+    await Order.cancel(orderId, reasonText);
+    await this.handleCancellationSideEffects(order, reasonText, isAdmin ? 'admin' : 'customer');
+
+    if (adminId) {
+      await AdminLog.create({
+        adminId,
+        action: 'CANCEL_ORDER',
+        entityType: 'order',
+        entityId: orderId,
+        oldValue: { status: order.status },
+        newValue: { status: 'cancelled', reason: reasonText },
+      });
+    }
+    const cancelledOrder = await Order.findById(orderId);
+    return cancelledOrder;
+  }
+  static async getStatistics(startDate = null, endDate = null) {
+    return Order.getStatistics(startDate, endDate);
+  }
+}
+module.exports = OrderService;

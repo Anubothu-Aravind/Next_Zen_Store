@@ -1,0 +1,185 @@
+@import "../node_modules/tailwindcss/index.css";
+
+/* Print utility - hide elements with print:hidden class */
+@media print {
+  .print\:hidden {
+    display: none !important;
+  }
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Custom thin scrollbar for sidebar panels */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #9ca3af;
+}
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db transparent;
+}
+
+/* Marquee scrolling animation for promo banners */
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Pulse glow for countdown / flash sale badges */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 107, 0, 0.4); }
+  50%      { box-shadow: 0 0 8px 4px rgba(255, 107, 0, 0.15); }
+}
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* ── Mobile microinteractions ──────────────────────── */
+
+/* Cart badge bounce-once on item add */
+@keyframes bounce-once {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.4); }
+  60%  { transform: scale(0.9); }
+  80%  { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+.animate-bounce-once {
+  animation: bounce-once 0.35s ease-out;
+}
+
+/* Add-to-cart button pop */
+@keyframes cart-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.15); }
+  70%  { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+.animate-cart-pop {
+  animation: cart-pop 0.25s ease-out;
+}
+
+/* Category icon scale-tap feedback */
+@keyframes icon-tap {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(0.88); }
+  100% { transform: scale(1); }
+}
+.animate-icon-tap {
+  animation: icon-tap 0.15s ease-in-out;
+}
+
+/* Ripple effect for buttons */
+@keyframes ripple {
+  0%   { transform: scale(0); opacity: 0.5; }
+  100% { transform: scale(4); opacity: 0; }
+}
+.ripple-container {
+  position: relative;
+  overflow: hidden;
+}
+.ripple-container::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  background: rgba(255,255,255,0.4);
+  animation: ripple 0.4s linear;
+  pointer-events: none;
+}
+
+/* Smooth fade-in for product cards on lazy load */
+@keyframes fade-in-up {
+  0%   { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.25s ease-out both;
+}
+
+/* Mobile bottom safe area padding */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .mobile-safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Category nav dropdown fade + slide in */
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom dialog animations */
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(100%); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.animate-slide-in-right {
+  animation: slide-in-right 0.25s ease-out both;
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.animate-scale-in {
+  animation: scale-in 0.2s ease-out both;
+}
+
+/* Global custom dropdown style for all native selects */
+select:not([multiple]) {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 7.5L10 12.5L15 7.5' stroke='%2364748B' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem 1rem;
+  padding-right: 2.25rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+select:not([multiple]):focus {
+  outline: none;
+  border-color: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.16);
+}
+
+select:not([multiple]):disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #f8fafc;
+}
